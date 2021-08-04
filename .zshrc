@@ -78,15 +78,11 @@ export PATH="/usr/lib/lightdm/lightdm:/usr/local/sbin:/usr/local/bin:/usr/sbin:/
 # For VIM 256 colour support
 export TERM=xterm-256color 
 export EDITOR='nvim'
+PATH=$PATH:~/.local/bin
+PATH=$PATH:~/.cargo/bin
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-echo "Enter \"help\" to open the help reader. Type \"<space>h\" to get the key mappings in neovim\n"
-alias help="sh -c \"cd help;glow\""
+echo "Enter \"help\" to open the help reader. Type \"<space>h\" in neovim to get the keymappings in neovim; Happy coding..."
+alias help="sh -c \"cd /home/makepkg/help;glow\""
 eval $(thefuck --alias)
-if [ ! -f .gitconfig ]; then
-  sudo cp -r /root/.ssh ~
-  sudo cp /root/.gitconfig ~
-  sudo chown -R makepkg .gitconfig
-  sudo chown -R makepkg .ssh
-fi
