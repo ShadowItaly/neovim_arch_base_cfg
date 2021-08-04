@@ -9,7 +9,6 @@ call plug#begin('~/.vim/plugged')
 Plug 'easymotion/vim-easymotion'
 Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-lua/lsp_extensions.nvim'
-Plug 'tpope/vim-fugitive'
 Plug 'rafi/awesome-vim-colorschemes'
 Plug 'skywind3000/asyncrun.vim'
 Plug 'rust-lang/rust.vim'
@@ -39,6 +38,7 @@ Plug 'lewis6991/gitsigns.nvim'
 Plug 'famiu/feline.nvim'
 Plug 'terrortylor/nvim-comment'
 Plug 'arecarn/vim-frisk'
+Plug 'kdheepak/lazygit.nvim'
 call plug#end()
 let g:asyncrun_open = 15
 colo sonokai
@@ -375,8 +375,7 @@ Mapper.map('n','<leader>b',":Telescope buffers<cr>",{silent = true, noremap = tr
 Mapper.map('n','<leader>l',":Lines<cr>",{silent = true, noremap = true}, "Search open lines","fuzzy_find_lines","Fuzzy searching for through the lines in the buffer.")
 Mapper.map('n','s',"<Plug>(easymotion-overwin-f)",{silent = true, noremap = false}, "Jump to character","easymotion_overwin_f","Jumping to any single character on the screen with easy motion.")
 Mapper.map('n','S',"<Plug>(easymotion-overwin-line)",{silent = true, noremap = false}, "Jump to line","easymotion_overwin_line","Jumping to any line in the open windows with easy motion.")
-Mapper.map('n','<leader>c',":Gcommit<cr>",{silent = true, noremap = true}, "Commit git changes", "git_commit","Commiting the current changes in git with the fugitive plugin.")
-Mapper.map('n','<leader>gp',":Gpush<cr>",{silent = false, noremap = true}, "Push git commits","git_push","Pushing the current state to the upstream repository.")
+Mapper.map('n','<leader>g',":LazyGit",{silent = false, noremap = true}, "Open the git console","git_console","Open the git console for commiting and changing things.")
 Mapper.map('n','<leader>f',":Telescope live_grep<cr>",{silent = true, noremap = true}, "Search strings in files", "live_grep","Matching the string in every file in the working directory.")
 Mapper.map('n','<leader>h',":Telescope mapper<cr>",{silent = true, noremap = true}, "Show keymappings", "show_help","Show this keymapping help to support the user of this config file.")
 Mapper.map('n','<leader>ss',":Telescope git_status<cr>",{silent = true, noremap = true}, "Search git diff","show_status","Show fuzzy search of the git status and shows a preview of the diff file.")
