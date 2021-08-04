@@ -6,7 +6,6 @@ set termguicolors
 
 set hidden
 call plug#begin('~/.vim/plugged')
-
 Plug 'easymotion/vim-easymotion'
 Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-lua/lsp_extensions.nvim'
@@ -40,7 +39,6 @@ Plug 'lewis6991/gitsigns.nvim'
 Plug 'famiu/feline.nvim'
 Plug 'terrortylor/nvim-comment'
 Plug 'arecarn/vim-frisk'
-Plug 'jiangmiao/auto-pairs'
 call plug#end()
 let g:asyncrun_open = 15
 colo sonokai
@@ -294,6 +292,40 @@ require'nvim-treesitter.configs'.setup {
   },
 }
 EOF
+" http://blog.trk.in.rs/2015/12/01/vim-tips/
+" http://modal.us/blog/2013/07/27/back-to-vim-with-nerdtree-nope-netrw/
+" Toggle Vexplore with Ctrl-E
+function! ToggleVExplorer()
+  if exists("t:expl_buf_num")
+      let expl_win_num = bufwinnr(t:expl_buf_num)
+      if expl_win_num != -1
+          let cur_win_nr = winnr()
+          exec expl_win_num . 'wincmd w'
+          close
+          exec cur_win_nr . 'wincmd w'
+          unlet t:expl_buf_num
+      else
+          unlet t:expl_buf_num
+      endif
+  else
+      exec '1wincmd w'
+      Vexplore
+      let t:expl_buf_num = bufnr("%")
+  endif
+endfunction
+
+" Hit enter in the file browser to open the selected
+" file with :vsplit to the right of the browser.
+let g:netrw_browse_split = 4
+let g:netrw_altv = 1
+
+" Default to tree mode
+let g:netrw_liststyle=3
+
+" Change directory to the current buffer when opening files.
+" set autochdir
+" maybe is easier within netrw just press c  help :netrw-c
+" that's better than 'cd ../path' which change in all tabs
 lua << EOF
   require("trouble").setup {
     fold_open = "v", -- icon used for open folds
@@ -369,6 +401,7 @@ Mapper.map('v','<leader>w',":'<,'>Frisk<cr>",{silent = false, noremap = false}, 
 Mapper.map('n','<leader>r',":AsyncRun ",{silent = false, noremap = false}, "Async run command","async_run","Asynchronously execute the command and pipe the output to copen.")
 Mapper.map('n','<leader>q',":cn<cr>",{silent = false, noremap = false}, "Next entry in quickfix","quickfix_next","Select the next quickfix entry.")
 Mapper.map('n','<leader>Q',":cp<cr>",{silent = false, noremap = false}, "Previous entry in quickfix","quickfix_prev","Select the previous quickfix entry.")
+Mapper.map('n','<leader>e',":call ToggleVExplorer()<CR>",{silent = false, noremap = false}, "Open explorer","open_explorer","Opens the explorer to explore the filesystem")
 EOF
 
 lua << EOF
