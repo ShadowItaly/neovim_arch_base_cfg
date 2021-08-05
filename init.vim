@@ -40,6 +40,8 @@ Plug 'terrortylor/nvim-comment'
 Plug 'arecarn/vim-frisk'
 Plug 'kdheepak/lazygit.nvim'
 Plug 'tpope/vim-surround'
+Plug 'lukas-reineke/indent-blankline.nvim'
+Plug 'seblj/nvim-echo-diagnostics'
 call plug#end()
 let g:asyncrun_open = 15
 colo sonokai
@@ -73,9 +75,25 @@ set smartcase
 "autocmd VimEnter,BufNewFile,BufReadPost * silent! call HardMode()
 
 "
+"
+" This will echo the diagnostics on CursorHold, and will also consider cmdheight
+autocmd CursorHold * lua require('echo-diagnostics').echo_line_diagnostic()
+
+" This will echo the entire diagnostic message. 
+" Should prompt you with Press ENTER or type command to continue.
+
+nnoremap <leader>cd <cmd>lua require("echo-diagnostics").echo_entire_diagnostic()<CR>
 
 lua <<EOF
 -- nvim_lsp object
+require("echo-diagnostics").setup{
+    show_diagnostic_number = true
+}
+require("indent_blankline").setup {
+    char = "|",
+    buftype_exclude = {"terminal"}
+}
+
 require('nvim_comment').setup()
 local nvim_lsp = require'lspconfig'
 
@@ -94,7 +112,7 @@ nvim_lsp.rust_analyzer.setup({
 -- Enable diagnostics
 vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
   vim.lsp.diagnostic.on_publish_diagnostics, {
-    virtual_text = true,
+    virtual_text = false,
     signs = true,
     update_in_insert = false,
   }
@@ -102,6 +120,7 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
 nvim_lsp.ccls.setup({})
 nvim_lsp.pyright.setup{}
 EOF
+
 
 " Completion
 lua <<EOF
@@ -172,7 +191,7 @@ set nowritebackup
 " this removes the jitter when warnings/errors flow in
 set signcolumn=yes
 
-set updatetime=4000
+set updatetime=300
 " Show diagnostic popup on cursor hover
 
 " Goto previous/next diagnostic warning/error
@@ -412,7 +431,8 @@ EOF
 
 lua << EOF
 require'treesitter-context.config'.setup{
-    enable = false, -- Enable this plugin (Can be enabled/disabled later via commands)
+    enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
+    throttle = true, -- Throttles plugin updates (may improve performance)
 }
 EOF
 
@@ -789,4 +809,3 @@ require('feline').setup({
 })
 EOF
 set showcmd
-hi MsgArea guifg=yellow
