@@ -42,6 +42,7 @@ Plug 'tpope/vim-surround'
 Plug 'lukas-reineke/indent-blankline.nvim'
 Plug 'seblj/nvim-echo-diagnostics'
 Plug 'justinmk/vim-sneak'
+Plug 'voldikss/vim-floaterm'
 call plug#end()
 let g:asyncrun_open = 15
 colo sonokai
@@ -427,6 +428,7 @@ Mapper.map('n','<leader>r',":AsyncRun ",{silent = false, noremap = false}, "Asyn
 Mapper.map('n','<leader>q',":cn<cr>",{silent = false, noremap = false}, "Next entry in quickfix","quickfix_next","Select the next quickfix entry.")
 Mapper.map('n','<leader>Q',":cp<cr>",{silent = false, noremap = false}, "Previous entry in quickfix","quickfix_prev","Select the previous quickfix entry.")
 Mapper.map('n','<leader>e',":call ToggleVExplorer()<CR>",{silent = false, noremap = false}, "Open explorer","open_explorer","Opens the explorer to explore the filesystem")
+Mapper.map('n','<leader>z',":FloatermNew<CR>",{silent = false, noremap = false}, "Opens floating terminal","float_term","Opens the floating terminal window.")
 EOF
 
 lua << EOF
