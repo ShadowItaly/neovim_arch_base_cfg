@@ -48,6 +48,7 @@ call plug#end()
 let g:asyncrun_open = 15
 colo sonokai
 let g:rainbow_active = 1 "set to 0 if you want to enable it later via :RainbowToggle
+let g:choosewin_overlay_enable = 1
 let g:sneak#label = 1
 
 
@@ -429,7 +430,7 @@ Mapper.map('n','<leader>r',":AsyncRun ",{silent = false, noremap = false}, "Asyn
 Mapper.map('n','<leader>q',":cn<cr>",{silent = false, noremap = false}, "Next entry in quickfix","quickfix_next","Select the next quickfix entry.")
 Mapper.map('n','<leader>Q',":cp<cr>",{silent = false, noremap = false}, "Previous entry in quickfix","quickfix_prev","Select the previous quickfix entry.")
 Mapper.map('n','<leader>e',":call ToggleVExplorer()<CR>",{silent = false, noremap = false}, "Open explorer","open_explorer","Opens the explorer to explore the filesystem")
-Mapper.map('n','<leader>z',":FloatermNew<CR>",{silent = false, noremap = false}, "Opens floating terminal","float_term","Opens the floating terminal window.")
+Mapper.map('n','<leader>z',":FloatermNew --autoclose=2<CR>",{silent = false, noremap = false}, "Opens floating terminal","float_term","Opens the floating terminal window.")
 Mapper.map('n','<leader>j',"<Plug>(choosewin)",{silent = false, noremap = false}, "Selects a window","window_picker","Selects a window with a character.")
 EOF
 
