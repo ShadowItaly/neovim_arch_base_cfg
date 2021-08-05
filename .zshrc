@@ -21,7 +21,7 @@ ZSH=$HOME/.oh-my-zsh
 # Optionally, if you set this to "random", it'll load a random theme each
 # time that oh-my-zsh is loaded.
 ZSH_THEME="powerlevel10k/powerlevel10k"
-export JAVA_HOME=/usr/share/jvm/java-16-openjdk
+export JAVA_HOME=/usr/lib/jvm/java-16-openjdk
 
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
