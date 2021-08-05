@@ -84,5 +84,9 @@ PATH=$PATH:~/.cargo/bin
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 echo "Enter \"help\" to open the help reader. Type \"<space>h\" in neovim to get the keymappings in neovim; Happy coding..."
-alias help="sh -c \"cd /home/makepkg/help;glow\""
+alias help="sh -c \"cd /root/help;glow\""
 eval $(thefuck --alias)
+if [[ $(pwd) == /  ]]
+then
+    cd ~
+fi

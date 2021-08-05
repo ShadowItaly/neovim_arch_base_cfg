@@ -118,7 +118,8 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
   }
 )
 nvim_lsp.ccls.setup({})
-nvim_lsp.pyright.setup{}
+nvim_lsp.jdtls.setup{ cmd = { 'jdtls' } }
+nvim_lsp.pylsp.setup{}
 EOF
 
 
