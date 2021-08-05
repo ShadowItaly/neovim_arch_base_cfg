@@ -6,7 +6,6 @@ set termguicolors
 
 set hidden
 call plug#begin('~/.vim/plugged')
-Plug 'easymotion/vim-easymotion'
 Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-lua/lsp_extensions.nvim'
 Plug 'rafi/awesome-vim-colorschemes'
@@ -42,10 +41,12 @@ Plug 'kdheepak/lazygit.nvim'
 Plug 'tpope/vim-surround'
 Plug 'lukas-reineke/indent-blankline.nvim'
 Plug 'seblj/nvim-echo-diagnostics'
+Plug 'justinmk/vim-sneak'
 call plug#end()
 let g:asyncrun_open = 15
 colo sonokai
 let g:rainbow_active = 1 "set to 0 if you want to enable it later via :RainbowToggle
+let g:sneak#label = 1
 
 
 " let g:indentLine_char = '|'
@@ -400,8 +401,6 @@ Mapper.map('t','jj',"<C-\\><C-n>",{silent = true, noremap = true}, "Exit termina
 Mapper.map('n','<leader>p',":Telescope find_files<cr>",{silent = true, noremap = true}, "Find files","fuzzy_find_files","Fuzzy searching for files in the current working directory.")
 Mapper.map('n','<leader>b',":Telescope buffers<cr>",{silent = true, noremap = true}, "Find buffers","fuzzy_find_buffer","Fuzzy searching for open buffers.")
 Mapper.map('n','<leader>l',":Lines<cr>",{silent = true, noremap = true}, "Search open lines","fuzzy_find_lines","Fuzzy searching for through the lines in the buffer.")
-Mapper.map('n','<leader>s',"<Plug>(easymotion-overwin-f)",{silent = true, noremap = false}, "Jump to character","easymotion_overwin_f","Jumping to any single character on the screen with easy motion.")
-Mapper.map('n','<leader>S',"<Plug>(easymotion-overwin-line)",{silent = true, noremap = false}, "Jump to line","easymotion_overwin_line","Jumping to any line in the open windows with easy motion.")
 Mapper.map('n','<leader>g',":LazyGit<cr>",{silent = false, noremap = true}, "Open the git console","git_console","Open the git console for commiting and changing things.")
 Mapper.map('n','<leader>f',":Telescope live_grep<cr>",{silent = true, noremap = true}, "Search strings in files", "live_grep","Matching the string in every file in the working directory.")
 Mapper.map('n','<leader>h',":Telescope mapper<cr>",{silent = true, noremap = true}, "Show keymappings", "show_help","Show this keymapping help to support the user of this config file.")
