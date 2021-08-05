@@ -43,6 +43,7 @@ Plug 'lukas-reineke/indent-blankline.nvim'
 Plug 'seblj/nvim-echo-diagnostics'
 Plug 'justinmk/vim-sneak'
 Plug 'voldikss/vim-floaterm'
+Plug 't9md/vim-choosewin'
 call plug#end()
 let g:asyncrun_open = 15
 colo sonokai
@@ -399,14 +400,14 @@ require'telescope'.load_extension('mapper')
 Mapper = require("nvim-mapper")
 Mapper.map('i', 'jj', "<Esc>", {silent = true, noremap = true}, "Exit insert mode", "exit_insert", "Exit insert mode with another key mapping to speed up the process.")
 Mapper.map('t','jj',"<C-\\><C-n>",{silent = true, noremap = true}, "Exit terminal insert mode", "exit_term_insert", "Exit the terminal insert mode with the same mapping as in the normal mode.")
-Mapper.map('n','<leader>p',":Telescope find_files<cr>",{silent = true, noremap = true}, "Find files","fuzzy_find_files","Fuzzy searching for files in the current working directory.")
-Mapper.map('n','<leader>b',":Telescope buffers<cr>",{silent = true, noremap = true}, "Find buffers","fuzzy_find_buffer","Fuzzy searching for open buffers.")
+Mapper.map('n','<leader>p',":GFiles<cr>",{silent = true, noremap = true}, "Find files","fuzzy_find_files","Fuzzy searching for files in the current working directory.")
+Mapper.map('n','<leader>b',":Buffers<cr>",{silent = true, noremap = true}, "Find buffers","fuzzy_find_buffer","Fuzzy searching for open buffers.")
 Mapper.map('n','<leader>l',":Lines<cr>",{silent = true, noremap = true}, "Search open lines","fuzzy_find_lines","Fuzzy searching for through the lines in the buffer.")
 Mapper.map('n','<leader>g',":LazyGit<cr>",{silent = false, noremap = true}, "Open the git console","git_console","Open the git console for commiting and changing things.")
-Mapper.map('n','<leader>f',":Telescope live_grep<cr>",{silent = true, noremap = true}, "Search strings in files", "live_grep","Matching the string in every file in the working directory.")
+Mapper.map('n','<leader>f',":Rg<cr>",{silent = true, noremap = true}, "Search strings in files", "live_grep","Matching the string in every file in the working directory.")
 Mapper.map('n','<leader>h',":Telescope mapper<cr>",{silent = true, noremap = true}, "Show keymappings", "show_help","Show this keymapping help to support the user of this config file.")
-Mapper.map('n','<leader>ss',":Telescope git_status<cr>",{silent = true, noremap = true}, "Search git diff","show_status","Show fuzzy search of the git status and shows a preview of the diff file.")
-Mapper.map('n','<leader>sc',":Telescope git_commits<cr>",{silent = true, noremap = true}, "Search git commits","show_commits","Fuzzy search git commits with telescope plugin.")
+Mapper.map('n','<leader>ss',":GFiles?<cr>",{silent = true, noremap = true}, "Search git diff","show_status","Show fuzzy search of the git status and shows a preview of the diff file.")
+Mapper.map('n','<leader>sc',":Commits<cr>",{silent = true, noremap = true}, "Search git commits","show_commits","Fuzzy search git commits with telescope plugin.")
 Mapper.map('n','<leader>sb',":Telescope git_branches<cr>",{silent = true, noremap = true}, "Search git branches", "show_branches","Fuzzy search git branches with the telescope plugin.")
 Mapper.map('n','<leader>t',":TodoTrouble<cr>",{silent = true, noremap = true}, "Show project todos/notes","show_todos","Shows a nice overview of the todos and notes in the current working directory.")
 Mapper.map('n','<leader>m',":BufferPick<cr>",{silent = true, noremap = true}, "Buffer picker","pick_buffer","Pick a buffer by doing selecting the buffer in the tab bar.")
@@ -429,6 +430,7 @@ Mapper.map('n','<leader>q',":cn<cr>",{silent = false, noremap = false}, "Next en
 Mapper.map('n','<leader>Q',":cp<cr>",{silent = false, noremap = false}, "Previous entry in quickfix","quickfix_prev","Select the previous quickfix entry.")
 Mapper.map('n','<leader>e',":call ToggleVExplorer()<CR>",{silent = false, noremap = false}, "Open explorer","open_explorer","Opens the explorer to explore the filesystem")
 Mapper.map('n','<leader>z',":FloatermNew<CR>",{silent = false, noremap = false}, "Opens floating terminal","float_term","Opens the floating terminal window.")
+Mapper.map('n','<leader>j',"<Plug>(choosewin)",{silent = false, noremap = false}, "Selects a window","window_picker","Selects a window with a character.")
 EOF
 
 lua << EOF
