@@ -15,9 +15,9 @@ Plug 'rust-lang/rust.vim'
 Plug 'mg979/vim-visual-multi'
 Plug 'lervag/vimtex'
 Plug 'luochen1990/rainbow'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'hrsh7th/nvim-compe'
 Plug 'hrsh7th/vim-vsnip'
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'wellle/targets.vim'
 Plug 'camspiers/animate.vim'
@@ -41,7 +41,6 @@ Plug 'arecarn/vim-frisk'
 Plug 'kdheepak/lazygit.nvim'
 Plug 'tpope/vim-surround'
 Plug 'lukas-reineke/indent-blankline.nvim'
-Plug 'seblj/nvim-echo-diagnostics'
 Plug 'justinmk/vim-sneak'
 Plug 'voldikss/vim-floaterm'
 Plug 't9md/vim-choosewin'
@@ -62,14 +61,15 @@ endif
 
 set shell=/usr/bin/zsh
 
+" Use <Tab> and <S-Tab> to navigate through popup menu
+imap <tab> <Plug>(completion_smart_tab)
+imap <s-tab> <Plug>(completion_smart_s_tab)
+
+" Set completeopt to have a better completion experience
 set completeopt=menuone,noselect
-inoremap <silent><expr> <C-Space> compe#complete()
-inoremap <silent><expr> <CR>      compe#confirm('<CR>')
-inoremap <silent><expr> <C-e>     compe#close('<C-e>')
-inoremap <silent><expr> <C-f>     compe#scroll({ 'delta': +4 })
-inoremap <silent><expr> <C-d>     compe#scroll({ 'delta': -4 })
 
-
+" Avoid showing message extra message when using completion
+set shortmess+=c
 
 let g:EasyMotion_do_mapping = 0 " Disable default mappings
 " binding.
@@ -79,21 +79,10 @@ let g:EasyMotion_smartcase = 1
 set smartcase
 "autocmd VimEnter,BufNewFile,BufReadPost * silent! call HardMode()
 
-"
-"
-" This will echo the diagnostics on CursorHold, and will also consider cmdheight
-autocmd CursorHold * lua require('echo-diagnostics').echo_line_diagnostic()
 
-" This will echo the entire diagnostic message. 
-" Should prompt you with Press ENTER or type command to continue.
-
-nnoremap <leader>cd <cmd>lua require("echo-diagnostics").echo_entire_diagnostic()<CR>
 
 lua <<EOF
 -- nvim_lsp object
-require("echo-diagnostics").setup{
-    show_diagnostic_number = true
-}
 require("indent_blankline").setup {
     char = "|",
     buftype_exclude = {"terminal"}
@@ -102,28 +91,24 @@ require("indent_blankline").setup {
 require('nvim_comment').setup()
 local nvim_lsp = require'lspconfig'
 
-local on_attach = function(client)
-end
-
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities.textDocument.completion.completionItem.snippetSupport = true
 
 -- Enable rust_analyzer
 nvim_lsp.rust_analyzer.setup({
     capabilities=capabilities,
-    on_attach=on_attach,
 })
 
 -- Enable diagnostics
 vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
   vim.lsp.diagnostic.on_publish_diagnostics, {
-    virtual_text = false,
+    virtual_text = true,
     signs = true,
     update_in_insert = false,
   }
 )
 nvim_lsp.ccls.setup({})
-nvim_lsp.jdtls.setup{ cmd = { 'jdtls' } }
+nvim_lsp.jdtls.setup({ cmd = { 'jdtls' }})
 nvim_lsp.pylsp.setup{}
 EOF
 
@@ -135,34 +120,6 @@ require('orgmode').setup({
   org_default_notes_file = '~/my-notes/org/refile.org',
 })
 
-require'compe'.setup {
-  enabled = true;
-  autocomplete = true;
-  debug = false;
-  min_length = 1;
-  preselect = 'enable';
-  throttle_time = 80;
-  source_timeout = 200;
-  incomplete_delay = 400;
-  max_abbr_width = 100;
-  max_kind_width = 100;
-  max_menu_width = 100;
-
-  source = {
-    path = true;
-    buffer = true;
-    calc = true;
-    vsnip = true;
-    nvim_lsp = true;
-    nvim_lua = true;
-    spell = true;
-    tags = true;
-    orgmode = true;
-  };
-}
-EOF
-lua << EOF
-require'lspconfig'.pyright.setup{}
 EOF
 
 
@@ -205,51 +162,6 @@ nnoremap <silent> g[ <cmd>lua vim.lsp.diagnostic.goto_prev()<CR>
 nnoremap <silent> g] <cmd>lua vim.lsp.diagnostic.goto_next()<CR>
 
 " Enable type inlay hints
-autocmd CursorMoved,InsertLeave,BufEnter,BufWinEnter,TabEnter,BufWritePost *
-\ lua require'lsp_extensions'.inlay_hints{ prefix = '', highlight = "Comment", enabled = {"TypeHint", "ChainingHint", "ParameterHint"} }
-
-
-lua << EOF
-local t = function(str)
-  return vim.api.nvim_replace_termcodes(str, true, true, true)
-end
-
-local check_back_space = function()
-    local col = vim.fn.col('.') - 1
-    return col == 0 or vim.fn.getline('.'):sub(col, col):match('%s') ~= nil
-end
-
--- Use (s-)tab to:
---- move to prev/next item in completion menuone
---- jump to prev/next snippet's placeholder
-_G.tab_complete = function()
-  if vim.fn.pumvisible() == 1 then
-    return t "<C-n>"
-  elseif vim.fn['vsnip#available'](1) == 1 then
-    return t "<Plug>(vsnip-expand-or-jump)"
-  elseif check_back_space() then
-    return t "<Tab>"
-  else
-    return vim.fn['compe#complete']()
-  end
-end
-_G.s_tab_complete = function()
-  if vim.fn.pumvisible() == 1 then
-    return t "<C-p>"
-  elseif vim.fn['vsnip#jumpable'](-1) == 1 then
-    return t "<Plug>(vsnip-jump-prev)"
-  else
-    -- If <S-Tab> is not working in your terminal, change it to <C-h>
-    return t "<S-Tab>"
-  end
-end
-
-vim.api.nvim_set_keymap("i", "<Tab>", "v:lua.tab_complete()", {expr = true})
-vim.api.nvim_set_keymap("s", "<Tab>", "v:lua.tab_complete()", {expr = true})
-vim.api.nvim_set_keymap("i", "<S-Tab>", "v:lua.s_tab_complete()", {expr = true})
-vim.api.nvim_set_keymap("s", "<S-Tab>", "v:lua.s_tab_complete()", {expr = true})
-EOF
-
 
 lua << EOF
   require("todo-comments").setup {
@@ -362,6 +274,7 @@ lua << EOF
   require("trouble").setup {
     fold_open = "v", -- icon used for open folds
     fold_closed = ">", -- icon used for closed folds
+    icons=false,
     indent_lines = false, -- add an indent guide below the fold icons
     signs = {
         -- icons / text used for a diagnostic
@@ -815,3 +728,76 @@ require('feline').setup({
 })
 EOF
 set showcmd
+" vimrc
+
+let g:UltiSnipsExpandTrigger="<c-a>"
+let g:UltiSnipsJumpForwardTrigger="<c-n>"
+let g:UltiSnipsJumpBackwardTrigger="<c-p>"
+
+let g:compe = {}
+let g:compe.enabled = v:true
+let g:compe.autocomplete = v:true
+let g:compe.debug = v:false
+let g:compe.min_length = 1
+let g:compe.preselect = 'enable'
+let g:compe.throttle_time = 80
+let g:compe.source_timeout = 200
+let g:compe.resolve_timeout = 800
+let g:compe.incomplete_delay = 400
+let g:compe.max_abbr_width = 100
+let g:compe.max_kind_width = 100
+let g:compe.max_menu_width = 100
+let g:compe.documentation = v:true
+
+let g:compe.source = {}
+let g:compe.source.path = v:true
+let g:compe.source.buffer = v:true
+let g:compe.source.calc = v:true
+let g:compe.source.nvim_lsp = v:true
+let g:compe.source.vsnip = v:true
+
+inoremap <silent><expr> <C-Space> compe#complete()
+inoremap <silent><expr> <CR>      compe#confirm('<CR>')
+inoremap <silent><expr> <C-e>     compe#close('<C-e>')
+inoremap <silent><expr> <C-f>     compe#scroll({ 'delta': +4 })
+inoremap <silent><expr> <C-d>     compe#scroll({ 'delta': -4 })
+lua << EOF
+local t = function(str)
+  return vim.api.nvim_replace_termcodes(str, true, true, true)
+end
+
+local check_back_space = function()
+    local col = vim.fn.col('.') - 1
+    return col == 0 or vim.fn.getline('.'):sub(col, col):match('%s') ~= nil
+end
+
+-- Use (s-)tab to:
+--- move to prev/next item in completion menuone
+--- jump to prev/next snippet's placeholder
+_G.tab_complete = function()
+  if vim.fn.pumvisible() == 1 then
+    return t "<C-n>"
+  elseif vim.fn['vsnip#available'](1) == 1 then
+    return t "<Plug>(vsnip-expand-or-jump)"
+  elseif check_back_space() then
+    return t "<Tab>"
+  else
+    return vim.fn['compe#complete']()
+  end
+end
+_G.s_tab_complete = function()
+  if vim.fn.pumvisible() == 1 then
+    return t "<C-p>"
+  elseif vim.fn['vsnip#jumpable'](-1) == 1 then
+    return t "<Plug>(vsnip-jump-prev)"
+  else
+    -- If <S-Tab> is not working in your terminal, change it to <C-h>
+    return t "<S-Tab>"
+  end
+end
+
+vim.api.nvim_set_keymap("i", "<Tab>", "v:lua.tab_complete()", {expr = true})
+vim.api.nvim_set_keymap("s", "<Tab>", "v:lua.tab_complete()", {expr = true})
+vim.api.nvim_set_keymap("i", "<S-Tab>", "v:lua.s_tab_complete()", {expr = true})
+vim.api.nvim_set_keymap("s", "<S-Tab>", "v:lua.s_tab_complete()", {expr = true})
+EOF
