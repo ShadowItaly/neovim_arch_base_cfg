@@ -5,7 +5,6 @@ set encoding=utf-8
 set fileencoding=utf-8
 set termguicolors
 
-set hidden
 call plug#begin('~/.vim/plugged')
 Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-lua/lsp_extensions.nvim'
@@ -21,36 +20,44 @@ Plug 'hrsh7th/vim-vsnip'
 Plug 'junegunn/fzf.vim'
 Plug 'wellle/targets.vim'
 Plug 'camspiers/animate.vim'
+Plug 'akinsho/nvim-bufferline.lua'
 Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'folke/todo-comments.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend updating the parsers on update
+Plug 'ggvgc/vim-fuzzysearch'
 Plug 'folke/trouble.nvim'
-Plug 'romgrk/barbar.nvim'
 Plug 'lazytanuki/nvim-mapper'
-Plug 'romgrk/nvim-treesitter-context'
-Plug 'kristijanhusak/orgmode.nvim'
-Plug 'winston0410/cmd-parser.nvim'
-Plug 'winston0410/range-highlight.nvim'
 Plug 'mbbill/undotree'
 Plug 'lewis6991/gitsigns.nvim'
+Plug 'phaazon/hop.nvim'
+Plug 'pwntester/octo.nvim'
 Plug 'famiu/feline.nvim'
 Plug 'terrortylor/nvim-comment'
 Plug 'arecarn/vim-frisk'
 Plug 'kdheepak/lazygit.nvim'
 Plug 'tpope/vim-surround'
 Plug 'lukas-reineke/indent-blankline.nvim'
-Plug 'justinmk/vim-sneak'
 Plug 'voldikss/vim-floaterm'
 Plug 't9md/vim-choosewin'
+Plug 'ggandor/lightspeed.nvim'
+Plug 'abecodes/tabout.nvim'
+Plug 'haringsrob/nvim_context_vt'
+Plug 'liuchengxu/vista.vim'
 call plug#end()
+let g:vista#renderer#enable_icon = 0
+let g:vista_sidebar_width = 45
 let g:asyncrun_open = 15
 colo sonokai
 let g:rainbow_active = 1 "set to 0 if you want to enable it later via :RainbowToggle
 let g:choosewin_overlay_enable = 1
 let g:sneak#label = 1
-
+let g:fuzzysearch_prompt = 'fuzzy /'
+let g:fuzzysearch_hlsearch = 1
+let g:fuzzysearch_ignorecase = 1
+let g:fuzzysearch_max_history = 30
+let g:fuzzysearch_match_spaces = 0
 
 " let g:indentLine_char = '|'
 if executable('ag')
@@ -71,17 +78,32 @@ set completeopt=menuone,noselect
 " Avoid showing message extra message when using completion
 set shortmess+=c
 
-let g:EasyMotion_do_mapping = 0 " Disable default mappings
 " binding.
 " " `s{char}{label}`
 " " Turn on case-insensitive feature
-let g:EasyMotion_smartcase = 1
 set smartcase
 "autocmd VimEnter,BufNewFile,BufReadPost * silent! call HardMode()
 
 
 
 lua <<EOF
+require'lightspeed'.setup {
+  jump_to_first_match = true,
+  jump_on_partial_input_safety_timeout = 400,
+  -- This can get _really_ slow if the window has a lot of content,
+  -- turn it on only if your machine can always cope with it.
+  highlight_unique_chars = false,
+  grey_out_search_area = true,
+  match_only_the_start_of_same_char_seqs = true,
+  limit_ft_matches = 5,
+  full_inclusive_prefix_key = '<c-x>',
+  -- By default, the values of these will be decided at runtime,
+  -- based on `jump_to_first_match`.
+  labels = nil,
+  cycle_group_fwd_key = nil,
+  cycle_group_bwd_key = nil,
+}
+
 -- nvim_lsp object
 require("indent_blankline").setup {
     char = "|",
@@ -114,14 +136,6 @@ EOF
 
 
 " Completion
-lua <<EOF
-require('orgmode').setup({
-  org_agenda_files = {'~/my-orgs/**/*'},
-  org_default_notes_file = '~/my-notes/org/refile.org',
-})
-
-EOF
-
 
 let $FZF_DEFAULT_COMMAND = 'rg --files '
 
@@ -324,9 +338,9 @@ Mapper.map('n','<leader>h',":Telescope mapper<cr>",{silent = true, noremap = tru
 Mapper.map('n','<leader>ss',":GFiles?<cr>",{silent = true, noremap = true}, "Search git diff","show_status","Show fuzzy search of the git status and shows a preview of the diff file.")
 Mapper.map('n','<leader>sc',":Commits<cr>",{silent = true, noremap = true}, "Search git commits","show_commits","Fuzzy search git commits with telescope plugin.")
 Mapper.map('n','<leader>sb',":Telescope git_branches<cr>",{silent = true, noremap = true}, "Search git branches", "show_branches","Fuzzy search git branches with the telescope plugin.")
+Mapper.map('n','<leader>st',":Vista finder<cr>",{silent = true, noremap = true}, "Search git branches", "show_vista_finder","Fuzzy search git branches with the telescope plugin.")
 Mapper.map('n','<leader>t',":TodoTrouble<cr>",{silent = true, noremap = true}, "Show project todos/notes","show_todos","Shows a nice overview of the todos and notes in the current working directory.")
 Mapper.map('n','<leader>m',":BufferPick<cr>",{silent = true, noremap = true}, "Buffer picker","pick_buffer","Pick a buffer by doing selecting the buffer in the tab bar.")
-Mapper.map('n','<leader>oa',"<Cmd>lua require('orgmode').action('agenda.prompt')<cr>",{silent = true, noremap = true}, "Open orgmode agenda","orgmode_agenda","Opens the orgmode agenda based on all todos in the opened buffers.")
 Mapper.map('n','<leader>u',"<cmd>lua require\"gitsigns\".reset_hunk()<CR>",{silent = true, noremap = true}, "Undo git hunk","undo_git_hunk","Undo git hunk from file.")
 
 Mapper.map('n','<leader>a',"<cmd>lua require\"gitsigns\".stage_hunk()<CR>",{silent = true, noremap = true}, "Stage git hunk","stage_git_hunk","Stage the current git hunk for the next commit.")
@@ -337,23 +351,22 @@ Mapper.map('n','<leader>n',"<cmd>lua require\"gitsigns.actions\".next_hunk()<CR>
 Mapper.map('n','<leader>N',"<cmd>lua require\"gitsigns.actions\".prev_hunk()<CR>",{silent = true, noremap = true}, "Previous git hunk","git_prev_hunk","Jump to the previous git hunk in the file.")
 Mapper.map('n','<leader>d',"<cmd>lua vim.lsp.diagnostic.goto_next({enable_popup=false})<CR>",{silent = true, noremap = true}, "Next diagnostic","diag_next","Jump to the next diagnostic message.")
 Mapper.map('n','<leader>D',"<cmd>lua vim.lsp.diagnostic.goto_prev({enable_popup=false})<CR>",{silent = true, noremap = true}, "Previous diagnostic","diag_prev","Jump to the previous diagnostic message.")
-Mapper.map('n','<leader>v',":Trouble<CR>",{silent = true, noremap = true}, "Show diagnostics","diag_nice_show","Show the file diagnostics in a file preview.")
-Mapper.map('n','<leader>w',":Frisk ",{silent = false, noremap = true}, "Browser search for word","browser_search","Search the web for a specific term.")
-Mapper.map('v','<leader>w',":'<,'>Frisk<cr>",{silent = false, noremap = false}, "Browser search for selection","browser_search_3","Search the web for the text selected with visual mode.")
+Mapper.map('n','<leader>1',":Trouble<CR>",{silent = true, noremap = true}, "Show diagnostics","diag_nice_show","Show the file diagnostics in a file preview.")
+Mapper.map('n','<leader>v',":Vista<CR>",{silent = true, noremap = true}, "Show tagbar","diag_nice_show","Show the file diagnostics in a file preview.")
+Mapper.map('n','<leader>w',":HopWord<cr>",{silent = false, noremap = false}, "Browser search for selection","browser_search_3","Search the web for the text selected with visual mode.")
+Mapper.map('n','<leader>c',":HopChar1<cr>",{silent = false, noremap = false}, "Browser search for selection","browser_search_4","Search the web for the text selected with visual mode.")
 Mapper.map('n','<leader>r',":AsyncRun ",{silent = false, noremap = false}, "Async run command","async_run","Asynchronously execute the command and pipe the output to copen.")
 Mapper.map('n','<leader>q',":cn<cr>",{silent = false, noremap = false}, "Next entry in quickfix","quickfix_next","Select the next quickfix entry.")
 Mapper.map('n','<leader>Q',":cp<cr>",{silent = false, noremap = false}, "Previous entry in quickfix","quickfix_prev","Select the previous quickfix entry.")
 Mapper.map('n','<leader>e',":call ToggleVExplorer()<CR>",{silent = false, noremap = false}, "Open explorer","open_explorer","Opens the explorer to explore the filesystem")
 Mapper.map('n','<leader>z',":FloatermNew --autoclose=2<CR>",{silent = false, noremap = false}, "Opens floating terminal","float_term","Opens the floating terminal window.")
 Mapper.map('n','<leader>j',"<Plug>(choosewin)",{silent = false, noremap = false}, "Selects a window","window_picker","Selects a window with a character.")
+Mapper.map('n','<leader>k',":FuzzySearch<cr>",{silent = false, noremap = false}, "Selects a window","fuzzy_search","Selects a window with a character.")
 EOF
+highlight HopNextKey1 ctermfg=red guifg=red
+highlight HopNextKey2 ctermfg=cyan guifg=magenta
+highlight HopNextKey ctermfg=magenta guifg=magenta
 
-lua << EOF
-require'treesitter-context.config'.setup{
-    enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
-    throttle = true, -- Throttles plugin updates (may improve performance)
-}
-EOF
 
 hi BufferCurrent ctermfg=blue
 hi BufferCurrentMod ctermfg=red
@@ -361,46 +374,6 @@ hi BufferVisibleTarget ctermfg=yellow
 hi BufferCurrentTarget ctermfg=yellow
 hi BufferInactiveTarget ctermfg=yellow
 set relativenumber
-
-lua << EOF
-require("range-highlight").setup {
-    highlight = "Visual",
-	highlight_with_out_range = {
-        d = true,
-        delete = true,
-        m = true,
-        move = true,
-        y = true,
-        yank = true,
-        c = true,
-        change = true,
-        j = true,
-        join = true,
-        ["<"] = true,
-        [">"] = true,
-        s = true,
-        subsititue = true,
-        sno = true,
-        snomagic = true,
-        sm = true,
-        smagic = true,
-        ret = true,
-        retab = true,
-        t = true,
-        co = true,
-        copy = true,
-        ce = true,
-        center = true,
-        ri = true,
-        right = true,
-        le = true,
-        left = true,
-        sor = true,
-        sort = true
-	}
-}
-EOF
-
 
 "Taken from https://stackoverflow.com/questions/5700389/using-vims-persistent-undo/22676189
 " Put plugins and dictionaries in this dir (also on Windows)
@@ -451,7 +424,6 @@ require('gitsigns').setup {
   update_debounce = 100,
   status_formatter = nil, -- Use default
   word_diff = false,
-  use_decoration_api = true,
   use_internal_diff = true,  -- If luajit is present
 }
 
@@ -761,44 +733,91 @@ inoremap <silent><expr> <CR>      compe#confirm('<CR>')
 inoremap <silent><expr> <C-e>     compe#close('<C-e>')
 inoremap <silent><expr> <C-f>     compe#scroll({ 'delta': +4 })
 inoremap <silent><expr> <C-d>     compe#scroll({ 'delta': -4 })
+
+autocmd CursorHold * lua vim.lsp.diagnostic.show_line_diagnostics()
+
+
 lua << EOF
-local t = function(str)
+require("tabout").setup({
+  tabkey = "",
+  backwards_tabkey = "",
+    act_as_tab = true, -- shift content if tab out is not possible
+    act_as_shift_tab = false, -- reverse shift content if tab out is not possible (if your keyboard/terminal supports <S-Tab>)
+    enable_backwards = true, -- well ...
+    completion = true, -- if the tabkey is used in a completion pum
+    tabouts = {
+      {open = "'", close = "'"},
+      {open = '"', close = '"'},
+      {open = '`', close = '`'},
+      {open = '(', close = ')'},
+      {open = '[', close = ']'},
+      {open = '{', close = '}'}
+    },
+    ignore_beginning = true, --[[ if the cursor is at the beginning of a filled element it will rather tab out than shift the content ]]
+    exclude = {} -- tabout will ignore these filetypes
+})
+
+
+local function replace_keycodes(str)
   return vim.api.nvim_replace_termcodes(str, true, true, true)
 end
 
-local check_back_space = function()
-    local col = vim.fn.col('.') - 1
-    return col == 0 or vim.fn.getline('.'):sub(col, col):match('%s') ~= nil
-end
-
--- Use (s-)tab to:
---- move to prev/next item in completion menuone
---- jump to prev/next snippet's placeholder
-_G.tab_complete = function()
-  if vim.fn.pumvisible() == 1 then
-    return t "<C-n>"
-  elseif vim.fn['vsnip#available'](1) == 1 then
-    return t "<Plug>(vsnip-expand-or-jump)"
-  elseif check_back_space() then
-    return t "<Tab>"
+function _G.tab_binding()
+  if vim.fn.pumvisible() ~= 0 then
+    return replace_keycodes("<C-n>")
+  elseif vim.fn["vsnip#available"](1) ~= 0 then
+    return replace_keycodes("<Plug>(vsnip-expand-or-jump)")
   else
-    return vim.fn['compe#complete']()
-  end
-end
-_G.s_tab_complete = function()
-  if vim.fn.pumvisible() == 1 then
-    return t "<C-p>"
-  elseif vim.fn['vsnip#jumpable'](-1) == 1 then
-    return t "<Plug>(vsnip-jump-prev)"
-  else
-    -- If <S-Tab> is not working in your terminal, change it to <C-h>
-    return t "<S-Tab>"
+    return replace_keycodes("<Plug>(Tabout)")
   end
 end
 
-vim.api.nvim_set_keymap("i", "<Tab>", "v:lua.tab_complete()", {expr = true})
-vim.api.nvim_set_keymap("s", "<Tab>", "v:lua.tab_complete()", {expr = true})
-vim.api.nvim_set_keymap("i", "<S-Tab>", "v:lua.s_tab_complete()", {expr = true})
-vim.api.nvim_set_keymap("s", "<S-Tab>", "v:lua.s_tab_complete()", {expr = true})
+function _G.s_tab_binding()
+  if vim.fn.pumvisible() ~= 0 then
+    return replace_keycodes("<C-p>")
+  elseif vim.fn["vsnip#jumpable"](-1) ~= 0 then
+    return replace_keycodes("<Plug>(vsnip-jump-prev)")
+  else
+    return replace_keycodes("<Plug>(TaboutBack)")
+  end
+end
+
+vim.api.nvim_set_keymap("i", "<Tab>", "v:lua.tab_binding()", {expr = true})
+vim.api.nvim_set_keymap("i", "<S-Tab>", "v:lua.s_tab_binding()", {expr = true})
 EOF
-autocmd CursorHold * lua vim.lsp.diagnostic.show_line_diagnostics()
+
+lua << EOF
+require('bufferline').setup({
+  options = {
+    numbers = "buffer_id",
+    number_style = "", -- buffer_id at index 1, ordinal at index 2
+    mappings = false,
+    close_command = "bdelete! %d",       -- can be a string | function, see "Mouse actions"
+    right_mouse_command = "bdelete! %d", -- can be a string | function, see "Mouse actions"
+    left_mouse_command = "buffer %d",    -- can be a string | function, see "Mouse actions"
+    middle_mouse_command = nil,          -- can be a string | function, see "Mouse actions"
+    indicator_icon = '| ',
+    buffer_close_icon = '',
+    modified_icon = 'x',
+    close_icon = 'k',
+    left_trunc_marker = '',
+    right_trunc_marker = '',
+    max_name_length = 18,
+    max_prefix_length = 15, -- prefix used when a buffer is de-duplicated
+    tab_size = 18,
+    diagnostics = "nvim_lsp",
+    diagnostics_indicator = function(count, level, diagnostics_dict, context)
+      return "("..count..")"
+    end,
+    show_buffer_icons = false, -- disable filetype icons for buffers
+    show_buffer_close_icons = false,
+    show_close_icon = false,
+    show_tab_indicators = false,
+    persist_buffer_sort = true, -- whether or not custom sorted buffers should persist
+    separator_style = {'|','|'},
+    enforce_regular_tabs = false,
+    always_show_bufferline = true,
+    sort_by = 'directory'
+  }
+})
+EOF
